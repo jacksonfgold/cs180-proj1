@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS180 Project 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #4a90e2;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+            color: #333;
+        }
+
+        .description {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            color: #555;
+            text-align: left;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .grid-item {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .image-title {
+            font-weight: bold;
+            margin-top: 10px;
+            color: #4a90e2;
+        }
+
+        .offset {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CS180 Project 1</h1>
+        <div class="description">
+            <p>
+                Project Overview: This project involves aligning color channels from digitized Prokudin-Gorskii glass plate images to create full-color photographs. Prokudin-Gorskii used a unique method of capturing three exposures of every scene using red, green, and blue filters. Our task was to automatically align these channels using image processing techniques to produce coherent color images, with the aim of preserving historical moments from the early 20th-century Russian Empire.
+            </p>
+        </div>
+
+        <h2>Part 1</h2>
+        <div class="description">
+            <p>
+                Approach: For Part 1, a straightforward exhaustive search was implemented to align the red and green channels to the blue channel by calculating the L2 norm or Normalized Cross-Correlation (NCC) between cropped regions of the images. This method worked well for low-resolution images but struggled with higher-resolution ones due to computational expense and limited search ranges. The results below show the aligned images along with their calculated offsets. A major challenge in this project was accurately aligning the color channels, particularly for high-resolution images. I initially used the L2 norm for alignment, but it didn't handle brightness differences well between channels, so I switched to Normalized Cross-Correlation (NCC) for better performance. However, implementing NCC proved frustrating; after hours of debugging and verifying my approach, I still couldn't resolve alignment issues. In the end, I rewrote the alignment code from scratch, and it worked correctly on the first try. I suspect the original problems stemmed from subtle errors in the distance calculations or misapplication of the NCC metric.
+            </p>
+        </div>
+        <div class="grid">
+            <div class="grid-item">
+                <img src="images/cathedral.jpg" alt="Cathedral">
+                <div class="image-title">Cathedral</div>
+                <div class="offset">R Offset: [5, 2], G Offset: [12, 3]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/monastery.jpg" alt="Monastery">
+                <div class="image-title">Monastery</div>
+                <div class="offset">R Offset: [-3, 2], G Offset: [3, 2]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/tobolsk.jpg" alt="Tobolsk">
+                <div class="image-title">Tobolsk</div>
+                <div class="offset">R Offset: [3, 3], G Offset: [6, 3]</div>
+            </div>
+        </div>
+
+        <h2>Part 2</h2>
+        <div class="description">
+            <p>
+                Approach: For Part 2, an image pyramid algorithm was employed to efficiently handle high-resolution images by recursively downscaling each image until a manageable size was reached. A smaller search window was used on the downscaled image, and the resulting alignment was scaled up for refinement at higher resolutions. This method significantly improved alignment accuracy and reduced computation time. Below are the results of the aligned images using the image pyramid approach, along with their offsets. I tested both NCC and L2 norm as alignment metrics to determine which worked best, and found that NCC consistently provided better results, especially for images with significant brightness variations. Having spent so much time debugging in the previous part, I was meticulous in this implementation. The only mistake I encountered was forgetting to rescale the displacement correctly when moving up the image pyramid. Fortunately, I identified and fixed this within about 15 minutes, leading to successful alignments with minimal additional troubleshooting. Also, for Emir, I was unable to align it with both NCC and L2, I suspect this is due to the unique brightness level of the image meaning that a different distance function would be required.
+            </p>
+        </div>
+        <div class="grid">
+            <div class="grid-item">
+                <img src="images/church_ncc.jpg" alt="Church">
+                <div class="image-title">Church</div>
+                <div class="offset">R Offset: [25, 4], G Offset: [58, -4]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/emir_l2.jpg" alt="Emir">
+                <div class="image-title">Emir</div>
+                <div class="offset">R Offset: [49, 24], G Offset: [112, -1050]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/harvesters_l2.jpg" alt="Harvesters">
+                <div class="image-title">Harvesters</div>
+                <div class="offset">R Offset: [60, 17], G Offset: [124, 14]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/icon_l2.jpg" alt="Icon">
+                <div class="image-title">Icon</div>
+                <div class="offset">R Offset: [41, 17], G Offset: [90, 23]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/lady_l2.jpg" alt="Lady">
+                <div class="image-title">Lady</div>
+                <div class="offset">R Offset: [52, 9], G Offset: [112, 12]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/melons_l2.jpg" alt="Melons">
+                <div class="image-title">Melons</div>
+                <div class="offset">R Offset: [82, 10], G Offset: [178, 13]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/monastery_ncc.jpg" alt="Monastery">
+                <div class="image-title">Monastery</div>
+                <div class="offset">R Offset: [-3, 2], G Offset: [3, 2]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/onion_church_ncc.jpg" alt="Onion Church">
+                <div class="image-title">Onion Church</div>
+                <div class="offset">R Offset: [52, 26], G Offset: [108, 36]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/sculpture_ncc.jpg" alt="Sculpture">
+                <div class="image-title">Sculpture</div>
+                <div class="offset">R Offset: [33, -11], G Offset: [140, -27]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/self_portrait_ncc.jpg" alt="Self Portrait">
+                <div class="image-title">Self Portrait</div>
+                <div class="offset">R Offset: [79, 29], G Offset: [176, 37]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/three_generations_ncc.jpg" alt="Three Generations">
+                <div class="image-title">Three Generations</div>
+                <div class="offset">R Offset: [53, 14], G Offset: [112, 11]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/tobolsk_ncc.jpg" alt="Tobolsk">
+                <div class="image-title">Tobolsk</div>
+                <div class="offset">R Offset: [3, 3], G Offset: [6, 3]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/train_ncc.jpg" alt="Train">
+                <div class="image-title">Train</div>
+                <div class="offset">R Offset: [42, 6], G Offset: [87, 32]</div>
+            </div>
+            <div class="grid-item">
+                <img src="images/cathedral_ncc.jpg" alt="Cathedral">
+                <div class="image-title">Cathedral</div>
+                <div class="offset">R Offset: [5, 2], G Offset: [12, 3]</div>
+            </div>
+        </div>
+        <h2>Examples</h2>
+    <div class="description">
+        <p>
+            Additional Examples: Below are some examples of additional images aligned using the same pyramid-based NCC approach. 
+        </p>
+    </div>
+    <div class="grid">
+        <div class="grid-item">
+            <img src="images/man_with_camel_ncc.jpg" alt="Man with Camel">
+            <div class="image-title">Man with Camel</div>
+            <div class="offset">R Offset: [20, 15], G Offset: [80, 38]</div>
+        </div>
+        <div class="grid-item">
+            <img src="images/napoleon_ncc.jpg" alt="Napoleon">
+            <div class="image-title">Napoleon</div>
+            <div class="offset">R Offset: [63, 5], G Offset: [133, -2]</div>
+        </div>
+        <div class="grid-item">
+            <img src="images/zakat_ncc.jpg" alt="Zakat">
+            <div class="image-title">Zakat</div>
+            <div class="offset">R Offset: [75, -41], G Offset: [114, -68]</div>
+        </div>
+    </div>
+    </div>
+    
+</body>
+</html>
